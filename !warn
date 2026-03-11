@@ -1,0 +1,74 @@
+// index.js
+const { Client, GatewayIntentBits, PermissionsBitField } = require('discord.js');
+const fs = require('fs');
+
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+// Fil för att spara varningar
+let warns = {};
+if (fs.existsSync('warns.json')) {
+    warns = JSON.parse(fs.readFileSync('warns.json'));
+}
+
+client.once('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+});
+
+client.on('messageCreate', async (message) => {
+    if (message.author.bot) return;
+
+    // !warn @user reason
+    if (message.content.startsWith('!warn')) {
+        if (!message.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
+            return message.reply("Du har inte behörighet att varna användare.");
+        }
+
+        const args = message.content.split(' ');
+        const user = message.mentions.members.first();
+        if (!user) return message.reply("Vänligen nämn en användare att varna.");
+        const reason = args.slice(2).join(' ') || "Ingen anledning angiven";
+
+        if (!warns[user.id]) warns[user.id] = [];
+        warns[user.id].push({ reason, staff: message.author.tag, date: new Date().toISOString() });
+
+        fs.writeFileSync('warns.json', JSON.stringify(warns, null, 4));
+        message.channel.send(`⚠️ ${user.user.tag} har blivit varnad av ${message.author.tag} för: ${reason}`);
+
+        // Automatisk åtgärd baserat på antal varningar
+        const warnCount = warns[user.id].length;
+        if (warnCount === 2) {
+            try { await user.timeout(10 * 60 * 1000, "Två varningar"); } catch {}
+            message.channel.send(`${user.user.tag} har blivit mutad i 10 minuter efter 2 varningar.`);
+        } else if (warnCount === 3) {
+            try { await user.kick("Tre varningar"); } catch {}
+            message.channel.send(`${user.user.tag} har blivit kickad efter 3 varningar.`);
+        } else if (warnCount >= 5) {
+            try { await user.ban({ reason: "5 varningar" }); } catch {}
+            message.channel.send(`${user.user.tag} har blivit bannad efter 5 varningar.`);
+        }
+    }
+
+    // !warnings @user - visa varningar
+    if (message.content.startsWith('!warnings')) {
+        const user = message.mentions.members.first();
+        if (!user) return message.reply("Vänligen nämn en användare.");
+
+        const userWarns = warns[user.id] || [];
+        if (userWarns.length === 0) return message.reply(`${user.user.tag} har inga varningar.`);
+
+        let reply = `⚠️ ${user.user.tag} har ${userWarns.length} varning(ar):\n`;
+        userWarns.forEach((w, i) => {
+            reply += `${i + 1}. ${w.reason} - av ${w.staff} (${new Date(w.date).toLocaleString()})\n`;
+        });
+
+        message.channel.send(reply);
+    }
+});
+
+client.login;MTQ4MTM4Njg0MzE0NzczMTEyOQ.GEo8pq.GDpc3R2mRYmB3tMzd_6-FJPP1Ican64EcIvT_c
