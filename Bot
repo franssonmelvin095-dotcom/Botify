@@ -10,3 +10,4 @@ client.on('messageCreate', message => {
         message.channel.send('Pong! 🏓');
     }
 });
+Client.login
