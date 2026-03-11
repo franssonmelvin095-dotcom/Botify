@@ -70,5 +70,3 @@ client.on('messageCreate', async (message) => {
         message.channel.send(reply);
     }
 });
-
-client.login;MTQ4MTM4Njg0MzE0NzczMTEyOQ.GEo8pq.GDpc3R2mRYmB3tMzd_6-FJPP1Ican64EcIvT_c
