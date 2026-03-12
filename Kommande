@@ -1,0 +1,24 @@
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName('kommande')
+		.setDescription('Visar kommande saker på servern'),
+
+	async execute(interaction) {
+
+		const embed = new EmbedBuilder()
+			.setTitle("🚀 Kommande saker")
+			.setDescription("Här är några saker som kommer snart!")
+			.addFields(
+				{ name: "🤖 Ny Bot Update", value: "Nya commands och bättre system.", inline: false },
+				{ name: "🎉 Event", value: "Server event kommer snart!", inline: false },
+				{ name: "🛠️ Fixar", value: "Buggar och förbättringar fixas.", inline: false }
+			)
+			.setColor("#00ff88")
+			.setFooter({ text: "The Dadabaka Team" })
+			.setTimestamp();
+
+		await interaction.reply({ embeds: [embed] });
+	},
+};
