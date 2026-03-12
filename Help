@@ -1,0 +1,61 @@
+require('dotenv').config();
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+});
+
+const prefix = "!";
+
+client.once("ready", () => {
+  console.log(`🤖 Bot started as ${client.user.tag}`);
+});
+
+client.on("messageCreate", (message) => {
+
+  if (message.author.bot) return;
+  if (!message.content.startsWith(prefix)) return;
+
+  const args = message.content.slice(prefix.length).split(" ");
+  const command = args.shift().toLowerCase();
+
+  // !ping
+  if (command === "ping") {
+    message.channel.send("🏓 Pong!");
+  }
+
+  // !help
+  if (command === "help") {
+    const embed = new EmbedBuilder()
+      .setTitle("🤖 Bot Commands")
+      .setDescription("Here are the bot commands")
+      .addFields(
+        { name: "!ping", value: "Check if the bot is online", inline: true },
+        { name: "!server", value: "Server information", inline: true },
+        { name: "!help", value: "Show commands", inline: true }
+      )
+      .setColor("#00ff88");
+
+    message.channel.send({ embeds: [embed] });
+  }
+
+  // !server
+  if (command === "server") {
+    const embed = new EmbedBuilder()
+      .setTitle("📊 Server Info")
+      .addFields(
+        { name: "Server Name", value: message.guild.name, inline: true },
+        { name: "Members", value: `${message.guild.memberCount}`, inline: true }
+      )
+      .setColor("#0099ff");
+
+    message.channel.send({ embeds: [embed] });
+  }
+
+});
+
+client.login(process.env.BOT_TOKEN);
