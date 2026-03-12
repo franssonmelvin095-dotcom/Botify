@@ -70,3 +70,4 @@ client.on('messageCreate', async (message) => {
         message.channel.send(reply);
     }
 });
+Client.login
