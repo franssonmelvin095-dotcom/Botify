@@ -34,3 +34,6 @@ client.on('messageCreate', message => {
 });
 
 Client.login
+if (message.content === '!yourcommand') {
+    message.channel.send('Your response here');
+}
