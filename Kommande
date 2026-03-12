@@ -1,25 +1,36 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('kommande')
-		.setDescription('Visar kommande saker på servern'),
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
 
-	async execute(interaction) {
+client.once('ready', () => {
+    console.log(`Logged in as ${client.user.tag}`);
+});
 
-		const embed = new EmbedBuilder()
-			.setTitle("🚀 Kommande saker")
-			.setDescription("Här är några saker som kommer snart!")
-			.addFields(
-				{ name: "🤖 Ny Bot Update", value: "Nya commands och bättre system.", inline: false },
-				{ name: "🎉 Event", value: "Server event kommer snart!", inline: false },
-				{ name: "🛠️ Fixar", value: "Buggar och förbättringar fixas.", inline: false }
-			)
-			.setColor("#00ff88")
-			.setFooter({ text: "The Dadabaka Team" })
-			.setTimestamp();
+client.on('messageCreate', message => {
+    if (message.author.bot) return;
 
-		await interaction.reply({ embeds: [embed] });
-	},
-};
+    if (message.content === '!kommande') {
+
+        const embed = new EmbedBuilder()
+            .setTitle("🚀 Kommande saker")
+            .setDescription("Här är några saker som kommer snart!")
+            .addFields(
+                { name: "🤖 Ny Bot Update", value: "Nya commands och bättre system.", inline: false },
+                { name: "🎉 Event", value: "Server event kommer snart!", inline: false },
+                { name: "🛠️ Fixar", value: "Buggar och förbättringar fixas.", inline: false }
+            )
+            .setColor("#00ff88")
+            .setFooter({ text: "The Dadabaka Team" })
+            .setTimestamp();
+
+        message.channel.send({ embeds: [embed] });
+    }
+});
+
 Client.login
