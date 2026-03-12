@@ -1,3 +1,4 @@
 if (message.content === '!restart' && message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
     message.channel.send('🔄 Bot restarting...')
         .then(() => process.exit()); 
+Client.login
